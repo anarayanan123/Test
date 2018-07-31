@@ -1,0 +1,59 @@
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <form action="/" method="get">
+
+     <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td colspan="4"></td>
+                <td>{{gotal}}</td>
+            </tr>
+        </tfoot>
+        <tbody>
+
+            {% for stock in stocks%}
+
+            <tr>
+                <td>{{stock.Stock}}</td>
+                <td>{{stock.Stock}}</td>
+                <td>{{stock.Number}}</td>
+                <td>{{prices[loop.index0]}}</td>
+                <td>{{totals[loop.index0]}}</td>
+            {% endfor  %}
+
+            </tr>
+
+
+            <tr>
+                <td colspan="4">CASH</td>
+                <td>{{cash}}</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+    </form>
+
+
+
+
+
+{% endblock %}
+
+
+

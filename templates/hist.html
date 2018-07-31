@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <form action="/" method="get">
+
+     <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Type</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        </tfoot>
+        <tbody>
+
+            {% for stock in rows%}
+
+            <tr>
+                <td>{{stock.Date}}</td>
+                <td>{{stock.Stock}}</td>
+                <td>{{stock.Price}}</td>
+                <td>{{stock.Type}}</td>
+                <td>{{stock.Quantity}}</td>
+            </tr>
+
+            {% endfor  %}
+        </tbody>
+    </table>
+
+    </form>
+
+
+
+
+
+{% endblock %}
+
+
+
