@@ -22,7 +22,7 @@ app = Flask(__name__)
 ###if you do not have SQL Alchemy you will get this warning 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 ###config the DB to the environment DB URL
-app.config['SQLALCHEMY_TRACK_URI'] = 'postgres://okvpxcvauaofmd:a57bf0462d83f843211915ad4c7b043a7883d1ef988b31c502860dac75d4406d@ec2-54-163-246-5.compute-1.amazonaws.com:5432/ddplart5et8pfb'
+app.config['SQLALCHEMY_TRACK_URI'] = 'postgres://hvfoqbqasxxmco:6c30c1c60c445054f9b1afdf9613fddf06331927a4a9c526c63d60910dc93f2c@ec2-54-83-3-101.compute-1.amazonaws.com:5432/dbaeatcsu7fc1p'
 ###config
 db = SQLAlchemy(app)
 
