@@ -1,40 +1,50 @@
 
+###removing SQL lite 
+#from cs50 import SQL
+import os
+import datetime 
 
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required, lookup, usd
 
 
-###removing SQL lite 
-#from cs50 import SQL
-import os
-from flask_sqlalchemy import SQLAlchemy 
 
 # Configure application
 app = Flask(__name__)
 
-######SSQLAlchemy 
+###############################SSQLAlchemy 
 ###if you do not have SQL Alchemy you will get this warning 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 ###config the DB to the environment DB URL
 app.config['SQLALCHEMY_TRACK_URI'] = os.environ['DATABASE_URL'] 
 ###config
 db = SQLAlchemy(app)
+
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(80), unique = True)
-    hash = db.Column(db.String(80))
+    hash = db.Column(db.String(200))
     cash = db.Column(db.Float, default = 10000.00)
+
+    def __init__(self, name):
+        self.name = name 
+
 class Portfolio(db.Model):
     pid = db.Column(db.Integer, primary_key = True)
-    TransDate = db.Column(db.DateTime)
+    TransDate = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     User = db.Column(db.String(80))
     Stock = db.Column(db.String(80))
     Price = db.Column(db.Float)
     Num = db.Column(db.Integer)
+
+    def __init__(self, name):
+        self.name = name 
+
 
 # Ensure responses aren't cached
 @app.after_request
@@ -53,7 +63,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-######SSQLAlchemy
+###############################SSQLAlchemy 
 # Configure CS50 Library to use SQLite database
 ###removing SQL lite 
 #db = SQL("sqlite:///finance.db")
@@ -62,7 +72,7 @@ Session(app)
 @login_required
 def index():
     user = session.get("user_id")
-######SSQLAlchemy
+###############################SSQLAlchemy
     ##rows = db.execute("Select Stock, sum(Num) as Number from portfolio where User = :User group by Stock having sum(Num) > 0", User = session.get("user_id"))
     rows = Portfolio.query(Portfolio.Stock, func.sum(Portfolio.Num).label('Number')).group_by(Portfolio.Stock).filter(Portfolio.User.in_(user))
     stocks = rows
@@ -81,7 +91,7 @@ def index():
         t = round(p*n,2)
         totals.append(usd(t))
         totals1.append(t)
-######SSQLAlchemy
+###############################SSQLAlchemy 
     #get cash
     ##rows = db.execute("Select cash from users where id = :User", User = session.get("user_id"))
     rows = Users.query(Users.cash).filter(Users.id.in_(user)) 
@@ -134,7 +144,7 @@ def buy():
         # check if they have enough cash
         # Query database for username
   
-######SSQLAlchemy &&&&&&&&
+###############################SSQLAlchemy 
     ##rows = db.execute("Select Stock, sum(Num) as Number from portfolio where User = :User group by Stock having sum(Num) > 0", User = session.get("user_id"))   
         rows = Users.query.all().filter(Users.id.in_(user)) 
         #rows = db.execute("SELECT * FROM users WHERE id = :id", id = session.get("user_id"))
@@ -143,7 +153,7 @@ def buy():
 
         # Add trasnaction to portfolio if user has enough cash
         if (float(num) * float(price)) <= rows:
-######SSQLAlchemy &&&&&&&&
+###############################SSQLAlchemy 
             #result = db.execute("INSERT INTO portfolio (User, Stock, Price, Num) VALUES(:User, :Stock, :Price, :Num)", User = session.get("user_id"), Stock = stock, Price = usd(price), Num = num)
             tx_user = Portfolio(session.get("user_id"))
             tx_stock = Portfolio(stock)
@@ -180,6 +190,7 @@ def history():
     """Show history of transactions"""
 
     user = session.get("user_id")
+###############################SSQLAlchemy 
     rows = db.execute("Select TransDate as Date, Stock, Price, case when Num < 0 then 'Sell' else 'Buy' end as Type, Num as Quantity from portfolio where User = :User order by Date asc", User = session.get("user_id"))
 
 
@@ -208,8 +219,14 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=request.form.get("username"))
+  ###############################SSQLAlchemy 
+
+
+
+        ##rows = db.execute("SELECT * FROM users WHERE username = :username",
+                          #username=request.form.get("username"))
+
+        rows = Users.query.filter(Users.username.in_(request.form.get("username"))).all()
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
