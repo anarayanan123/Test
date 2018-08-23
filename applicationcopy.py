@@ -22,7 +22,8 @@ app = Flask(__name__)
 ###if you do not have SQL Alchemy you will get this warning 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 ###config the DB to the environment DB URL
-app.config['SQLALCHEMY_TRACK_URI'] = 'postgres://hvfoqbqasxxmco:6c30c1c60c445054f9b1afdf9613fddf06331927a4a9c526c63d60910dc93f2c@ec2-54-83-3-101.compute-1.amazonaws.com:5432/dbaeatcsu7fc1p'
+DATABASE_DEFAULT = 'postgres://hvfoqbqasxxmco:6c30c1c60c445054f9b1afdf9613fddf06331927a4a9c526c63d60910dc93f2c@ec2-54-83-3-101.compute-1.amazonaws.com:5432/dbaeatcsu7fc1p'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', DATABASE_DEFAULT)
 ###config
 db = SQLAlchemy(app)
 
@@ -226,12 +227,21 @@ def login():
 
         rows = Users.query.filter(Users.username.in_(request.form.get("username"))).all()
 
+        rows1 = db.session.query(Users.username).all()
+        print(rows1)
+
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
+
+
+
+
+
+
 
         # Redirect user to home page
         return redirect("/")
